@@ -5,7 +5,7 @@ root = Tk()
 root.title("Travelling Sales Man")
 root.geometry("+400+200")
 root.iconbitmap('logo.ico')
-root.configure(bg="#f6f6f9", padx=20)
+root.configure(padx=20)
 
 ##=========================================
 
@@ -64,10 +64,8 @@ def show_way() -> None:
     for i in range(len(WAY)):
         way += ' ' + str(WAY[i]+1) + ' '
         if i != len(WAY)-1:
-            # way += '->'
             way += '→'
 
-    # print(way)
     path_label.config(text=f"Path: {way}")
 
 
@@ -89,7 +87,7 @@ def swap() -> None:
                 WAY = way_aux[:]
 
  
-
+# Store the tkinter input into distance matrix in float type
 def set_distance_matrix():
     global DISTANCE_MATRIX
     for i in range(NUM_OF_CITIES):
@@ -101,42 +99,54 @@ def set_distance_matrix():
 
 def find_path():
     global INFINITY
-    set_distance_matrix()
-    for i in range(NUM_OF_CITIES):
-        for j in range(NUM_OF_CITIES):
-            distance = float(DISTANCE_MATRIX[i][j])
-            INFINITY = INFINITY + distance
+    try:
+        set_distance_matrix()
+        for i in range(NUM_OF_CITIES):
+            for j in range(NUM_OF_CITIES):
+                distance = float(DISTANCE_MATRIX[i][j])
+                INFINITY = INFINITY + distance
 
-    find_way()    # Find initial solution based on nearest neighbor
-    
-    # Perform swaps in order to improve the solution
-    # Swap method is called multiple times to further minimize costs
-    for i in range(5):
-        swap()
+        find_way()    # Find initial solution based on nearest neighbor
+        
+        # Perform swaps in order to improve the solution
+        # Swap method is called multiple times to further minimize costs
+        for i in range(5):
+            swap()
 
-    # display results
-    show_way()
-    dis = calculate_distance(WAY)
-    cost_label.config(text=f"Distance: {round(dis,2)}    ")
+        # display results
+        show_way()
+        dis = calculate_distance(WAY)
+        cost_label.config(text=f"Distance: {round(dis,2)}    ")
 
-for x in range(NUM_OF_CITIES):
+    except:
+        path_label.config(text=f"")
+        cost_label.config(text=f"Wrong Input", fg="#fb0b13")
+
+
+# Create the entry boxes   
+for x in range(1,NUM_OF_CITIES+1):
     c = []
-    for y in range(NUM_OF_CITIES):
+    for y in range(1,NUM_OF_CITIES+1):
         my_entry = Entry(root)
-        my_entry.grid(row=x, column=y, pady=10, padx=5)
+        my_entry.grid(row=x+1, column=y, pady=10, padx=5)
         c.append(my_entry)
     input_matrix.append(c)    
-    
 
 
+head_label = Label(root, text="Enter the distances", font=('Helvetica 15 bold')).grid(row=0, columnspan=NUM_OF_CITIES+1, pady=(5,15))
 
-submit_button = Button(root, text="Submit", pady=5, padx=20 ,bg='#57a1f8',fg='white',border=0,  cursor='hand2', command=find_path)        
-submit_button.grid(row=NUM_OF_CITIES+3, column=0, pady=(20,5))     
+city_label = Label(root, text="City", font=('default',11,'bold')).grid(row=1, column=0)
+for i in range(NUM_OF_CITIES):
+    city_label_h = Label(root, text=f"City {i+1}", font=('default',10,'bold')).grid(row=1, column=i+1)
+    city_label_v= Label(root, text=f"City {i+1}", font=('default',10,'bold')).grid(row=i+2, column=0)
 
-path_label = Label(root, text="", fg="#019707", bg='#f6f6f9', font=('default',10,'bold'))
-path_label.grid(row=NUM_OF_CITIES+1, column=0, pady=(20,5))
+submit_button = Button(root, text="Submit", pady=5, padx=20 , cursor='hand2', command=find_path)        
+submit_button.grid(row=NUM_OF_CITIES+3+1, column=0, pady=20)     
 
-cost_label = Label(root, text="", fg="#9400ff", bg='#f6f6f9', font=('default',10,'bold'))
-cost_label.grid(row=NUM_OF_CITIES+2, column=0)
+path_label = Label(root, text="", fg="#019707", font=('default',10,'bold'))
+path_label.grid(row=NUM_OF_CITIES+1+1, columnspan=NUM_OF_CITIES+1, pady=(20,5))
+
+cost_label = Label(root, text="", fg="#9400ff", font=('default',10,'bold'))
+cost_label.grid(row=NUM_OF_CITIES+2+1, columnspan=NUM_OF_CITIES+1)
 
 root.mainloop()
